@@ -19,20 +19,39 @@ string lower(string input)
 int main(){
     Elevator lift;
     string in;
-    bool inerror = true;
+    int userFloor = 2;
+    bool inerror;
     bool masterloop = true;
     cout << "Current floor: " << lift.GetCurrentFloor() << endl;
     cout << "Welcome to the Empire State Building." << endl << endl;
     while(masterloop)
     {
+        inerror = true;
         while(inerror)
         {
-        if(lift.GetCurrentFloor() != 1 && lift.GetCurrentFloor() != 40)
-        {
+        
             cout << "Would you like to call an elevator? (Yes/No)" << endl;
             cin >> in;
             if(lower(in) == "yes")
             {
+                
+                if(userFloor != 1 && userFloor != 102)
+                {
+                    while(inerror)
+                    {
+                        cout << "Would you like to go up or down? (Up/Down)" << endl;
+                        cin >> in;
+                        if(!(lower(in) == "up" || lower(in) == "down"))
+                        {
+                            cout << "Please double check your input, it should be (Up/Down). Thanks!" << endl;
+                        }
+                        else
+                        {
+                            inerror = false;
+                        }
+                    }
+                }
+                cout << "Calling the elevator." << endl;;
                 inerror = false;
             }
             else if(lower(in) == "no")
@@ -41,8 +60,13 @@ int main(){
                 inerror = false;
                 masterloop = false;
             }
+            else
+            {
+                cout << "Please double check your input, it should be (Yes/No). Thanks!" << endl;
+            }
+      
         }
-        }
+
         
     }
     return 0;
