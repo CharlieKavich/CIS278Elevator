@@ -18,6 +18,7 @@ Features:
 
 Gui explanation:
     For best explanation watch the following video:
+    https://www.youtube.com/watch?v=uy2cRQ70caI
 
     Otherwise, after initialization, the top row has a display of numbers that display the level of each elevator.
     The second displays whenever an elevator is called either by the random funciton or the user
