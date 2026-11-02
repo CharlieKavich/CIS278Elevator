@@ -114,7 +114,7 @@ void Elevator::callLift(vector<Elevator>& shafts, int targetFloor, int shaft)
     lock.unlock();
     this_thread::sleep_for(chrono::seconds(10));
     lock.lock();
-    formatting(3, "Doors closedyes on car: " + to_string(shaft + 1));
+    formatting(3, "Doors closed on car: " + to_string(shaft + 1));
    
     if(CurrentFloor - destination > 0)
     {
