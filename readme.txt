@@ -15,3 +15,14 @@ Features:
     Live display with status updates like specific elevator's doors opening
     Random calls to elevators to simulate random people in a building calling elevators
     Elevator calls prioritizing the nearest non moving elevator
+
+Gui explanation:
+    For best explanation watch the following video:
+
+    Otherwise, after initialization, the top row has a display of numbers that display the level of each elevator.
+    The second displays whenever an elevator is called either by the random funciton or the user
+    The third line displays when the doors open and close on specific elevators.
+
+    Everything else is part of the user input output loop.
+
+

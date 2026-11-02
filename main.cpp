@@ -180,7 +180,7 @@ int main(){
             }
             else if(lower(in) == "no")
             {
-                cout << "Thanks for usign the simulation!" << endl;
+                cout << "Thanks for using the simulation!" << endl;
                 running = false;
                 inerror = false;
                 masterloop = false;
