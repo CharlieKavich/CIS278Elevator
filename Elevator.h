@@ -1,8 +1,7 @@
 #ifndef ELEVATOR_H
 #define ELEVATOR_H
-#include <cmath>
-#include <string>
-#include <vector>
+#include "all.h"
+
 
 using namespace std;
 class Elevator {
@@ -10,16 +9,24 @@ class Elevator {
         int CurrentFloor;
         int destination;
         int totalFloors;
-        void callLift(int userFloor, Elevator active);
+        void callLift(vector<Elevator>& shafts, int targetFloor, int shaft);
+        
 
     public:
     Elevator();
 
     Elevator(int startingFloor, int totalFloors);
 
+    bool ismovin
+    static void formatting(int row, const string& text);
+    static void floorReading(vector<Elevator>& shafts);
     static int randomToN(int n);
     
-    static void liftPriority(int userFloor, vector<Elevator> shafts);
+    static void liftPriority(int userFloor, vector<Elevator>& shafts, int targetLevel);
+
+    static mutex elMtx;
+
+    static vector<thread> lifts;
 
     int GetTotalFloors();
 

@@ -1,16 +1,12 @@
-#include <string>
-#include <iostream>
-#include <limits>
-#include <random>
-#include<chrono>
-#include <thread>
-#include "Elevator.h"
-#include <cctype>
 
+
+#include "Elevator.h"
+#include "all.h"
 
 
 using namespace std;
 
+atomic<bool> running(true);
 
 string lower(string input)
 {
@@ -22,6 +18,21 @@ string lower(string input)
     return input;
 }
 
+void RandomElevatorCalls(vector<Elevator>& shafts, int floors)
+{
+    while(running)
+    {
+        int start = Elevator::randomToN(floors);
+        int end = Elevator::randomToN(floors);
+        this_thread::sleep_for(chrono::seconds(15));
+        if(!running)
+        {
+            break;
+        }
+        
+        Elevator::liftPriority(Elevator::randomToN(floors), shafts, Elevator::randomToN(floors));
+    }
+}
 
 void generateEnvironment(vector<Elevator>& env, int count, int floors)
 {
@@ -31,19 +42,21 @@ void generateEnvironment(vector<Elevator>& env, int count, int floors)
         int current = Elevator::randomToN(floors);
         Elevator elevator(current, floors);
         env.push_back(elevator);
+        env.at(i).SetDestination(current);
     }
 }
 
-void simulation(vector<Elevator> shafts)
+void simulation(vector<Elevator>& shafts)
 {
-    unsigned int i;
-    for(i = 0; i < shafts.size(); i ++)
-    {
-        cout << shafts.at(i).GetCurrentFloor() << " "; 
-    }
+    
+    
+    Elevator::liftPriority(1, shafts, 20);
+
+
 }
 
 int main(){
+    srand(time(nullptr));
     vector<Elevator> shafts;
     int i;
     int totaFloors;
@@ -96,14 +109,20 @@ int main(){
             elevatorCount = -1;
         }
     }
+    
     cout << "Input confirmed: " << elevatorCount << " shafts." << endl;
     this_thread::sleep_for(chrono::seconds(2));
     cout << "Generating simulation..." << endl;
     generateEnvironment(shafts, elevatorCount, totaFloors);
-    this_thread::sleep_for(chrono::seconds(4));
-    cout << "Generated. Please press enter to continue" << endl; 
+    cout << "\033[2J" << "\033[4;r" << "\033[4;1H" << flush;
+    {
+        lock_guard<mutex> lock(Elevator::elMtx);
 
-    simulation(shafts);
+        Elevator::floorReading(shafts);
+    }
+    RandomElevatorCalls(shafts, totaFloors);
+
+    
 
     while(masterloop)
     {
