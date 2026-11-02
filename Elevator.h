@@ -9,6 +9,7 @@ class Elevator {
         int CurrentFloor;
         int destination;
         int totalFloors;
+        
         void callLift(vector<Elevator>& shafts, int targetFloor, int shaft);
         
 
@@ -16,8 +17,8 @@ class Elevator {
     Elevator();
 
     Elevator(int startingFloor, int totalFloors);
-
-    bool ismovin
+    
+    
     static void formatting(int row, const string& text);
     static void floorReading(vector<Elevator>& shafts);
     static int randomToN(int n);

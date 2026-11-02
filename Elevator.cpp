@@ -3,16 +3,19 @@
 mutex Elevator::elMtx;
 vector<thread> Elevator::lifts;
 
+//base constructor
 Elevator::Elevator() {
-    CurrentFloor = 2;
+    
 }
-
+//overloaded constuctor to give a starting floor of the elevator and the total floors of that elevator
 Elevator::Elevator(int startingFloor, int totalFloors)
 {
     this->totalFloors = totalFloors;
     CurrentFloor = startingFloor;
 
 }
+/* this function is for outputting information on a specific row and making it so the user prompts and input dont get written over when
+there are status updates on the elevator and whatnot*/
 void Elevator::formatting(int row, const string& text)
 {
     ostringstream out;
@@ -20,7 +23,9 @@ void Elevator::formatting(int row, const string& text)
     cout << out.str() << flush; 
 
 }
-
+/*
+    this funciton outputs the current floor of each elevator in the building on the first line usign the formatting function
+*/
 void Elevator::floorReading(vector<Elevator>& shafts)
 {
     unsigned int i;
@@ -32,6 +37,12 @@ void Elevator::floorReading(vector<Elevator>& shafts)
     }
     formatting(1, line.str());
 }
+
+/*
+    this is probably the most important function in the entire program. It determines which elevator to use when an elevator is called either by 
+    the user or the random calls that simulate random people on other floors. What it does is check every elevator that isn't already in transit
+    and sends the one thats closest to the caller to the caller by creating a thread for the next callLift function.
+*/
 void Elevator::liftPriority(int userFloor, vector<Elevator>& shafts, int targetLevel)
 {
     lock_guard<mutex> lock(elMtx);
@@ -65,7 +76,11 @@ void Elevator::liftPriority(int userFloor, vector<Elevator>& shafts, int targetL
 
 
 }
-
+/*
+    this is the other most important function. What it does is determine whether the elevator needs to go up or down, and then it uses sleep_for functions
+    to simulate transit time and tick the floor of the elevator. It does this for both the going to the caller floor and destination floor steps.
+    Additionally, the time it takes for the doors of the elevator to open and close are simulated and outputted as status updates.
+*/
 void Elevator::callLift(vector<Elevator>& shafts, int targetFloor, int shaft)
 {
     unique_lock<mutex> lock(elMtx);
@@ -95,11 +110,11 @@ void Elevator::callLift(vector<Elevator>& shafts, int targetFloor, int shaft)
         floorReading(shafts);
     }
     destination = targetFloor;
-    formatting(3, "Doors opening on shaft: " + to_string(shaft + 1));
+    formatting(3, "Doors opened on car: " + to_string(shaft + 1));
     lock.unlock();
-    this_thread::sleep_for(chrono::seconds(15));
+    this_thread::sleep_for(chrono::seconds(10));
     lock.lock();
-    formatting(3, "Doors closing on shaft: " + to_string(shaft + 1));
+    formatting(3, "Doors closedyes on car: " + to_string(shaft + 1));
    
     if(CurrentFloor - destination > 0)
     {
@@ -126,6 +141,7 @@ void Elevator::callLift(vector<Elevator>& shafts, int targetFloor, int shaft)
 
 }
 
+/* the following are just getter and setter functions I needed to use for the other functions.*/
 int Elevator::GetCurrentFloor()
 {
     return CurrentFloor;
@@ -139,6 +155,7 @@ void Elevator::SetDestination(int floor)
     destination = floor;
 }
 
+/*There is some random behavior I am simulating, so I just created this simple static random number function*/
 int Elevator::randomToN(int n)
 {
     lock_guard<mutex> lock(elMtx);

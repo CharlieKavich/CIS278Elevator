@@ -7,7 +7,9 @@
 using namespace std;
 
 atomic<bool> running(true);
-
+/*
+this function makes the string lowercase.
+*/
 string lower(string input)
 {
     int i;
@@ -18,13 +20,17 @@ string lower(string input)
     return input;
 }
 
+/*
+    this function runs continuously in its own thread where every 30 seconds its calls a random elevator to a random floor.
+    This is to simulate random people using elevators.
+*/
 void RandomElevatorCalls(vector<Elevator>& shafts, int floors)
 {
     while(running)
     {
         int start = Elevator::randomToN(floors);
         int end = Elevator::randomToN(floors);
-        this_thread::sleep_for(chrono::seconds(15));
+        this_thread::sleep_for(chrono::seconds(30));
         if(!running)
         {
             break;
@@ -33,7 +39,9 @@ void RandomElevatorCalls(vector<Elevator>& shafts, int floors)
         Elevator::liftPriority(Elevator::randomToN(floors), shafts, Elevator::randomToN(floors));
     }
 }
-
+/*
+    This function is just used to dynamically allocate count amount of elevator objects each having floors floors that they can access.
+*/
 void generateEnvironment(vector<Elevator>& env, int count, int floors)
 {
     unsigned int i;
@@ -46,6 +54,9 @@ void generateEnvironment(vector<Elevator>& env, int count, int floors)
     }
 }
 
+/*
+this is a function that I was using to test liftPriority while I was still working on it and getting the output right.
+*/
 void simulation(vector<Elevator>& shafts)
 {
     
@@ -55,12 +66,15 @@ void simulation(vector<Elevator>& shafts)
 
 }
 
+/*This is main where all input output interactions happen. I tried putting input guards on everything so it should decently robust.*/
+
 int main(){
     srand(time(nullptr));
     vector<Elevator> shafts;
     int i;
     int totaFloors;
-    int userFloor = 2;
+    int userFloor = 1;
+    int going;
     int elevatorCount;
     string in;
     bool inerror = true;
@@ -112,7 +126,6 @@ int main(){
     
     cout << "Input confirmed: " << elevatorCount << " shafts." << endl;
     this_thread::sleep_for(chrono::seconds(2));
-    cout << "Generating simulation..." << endl;
     generateEnvironment(shafts, elevatorCount, totaFloors);
     cout << "\033[2J" << "\033[4;r" << "\033[4;1H" << flush;
     {
@@ -120,7 +133,7 @@ int main(){
 
         Elevator::floorReading(shafts);
     }
-    RandomElevatorCalls(shafts, totaFloors);
+    thread caller(RandomElevatorCalls, ref(shafts), totaFloors);
 
     
 
@@ -134,30 +147,41 @@ int main(){
             cin >> in;
             if(lower(in) == "yes")
             {
-                
-                if(userFloor != 1 && userFloor != 102)
-                {
                     while(inerror)
                     {
-                        cout << "Would you like to go up or down? (Up/Down)" << endl;
-                        cin >> in;
-                        if(!(lower(in) == "up" || lower(in) == "down"))
+                        cout << "Which floor would you like to go to? (" << 1 << " - " << totaFloors << "):" << endl;
+                        cin >> going;
+                        if(cin.fail())
                         {
-                            cout << "Please double check your input, it should be (Up/Down). Thanks!" << endl;
-
+                            cin.clear();
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            cout << "It seems like your input was invalid. ";
+                            continue;
                         }
-                        else
+                        if(going <= totaFloors && going > 0)
                         {
                             inerror = false;
                         }
+                        else
+                        {
+                            cout << "It seems like your input was invalid. ";
+                            elevatorCount = -1;
+                        }
+
                     }
-                }
-                cout << "Calling the elevator." << endl;;
+                    
+                
+                cout << "Calling the elevator from floor " << userFloor << " to " << going << endl;
+                Elevator::liftPriority(userFloor, shafts, going);
+                userFloor = going;
+               
+                
                 inerror = false;
             }
             else if(lower(in) == "no")
             {
-                cout << "Take your time and enjoy your time on this floor!" << endl;
+                cout << "Thanks for usign the simulation!" << endl;
+                running = false;
                 inerror = false;
                 masterloop = false;
             }
